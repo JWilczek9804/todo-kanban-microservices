@@ -1,0 +1,74 @@
+services:
+  redis-auth:
+    image: redis:7-alpine
+    container_name: taskflow-redis-auth
+    restart: unless-stopped
+    volumes:
+      - redis_auth_data:/data
+    networks:
+      - taskflow
+
+  redis-tasks:
+    image: redis:7-alpine
+    container_name: taskflow-redis-tasks
+    restart: unless-stopped
+    volumes:
+      - redis_tasks_data:/data
+    networks:
+      - taskflow
+
+  auth-service:
+    build: ./auth-service
+    container_name: taskflow-auth
+    restart: unless-stopped
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-supersecretkey-change-me}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      REDIS_URL_AUTH: ${REDIS_URL_AUTH:-redis://redis-auth:6379/0}
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis-auth
+    networks:
+      - taskflow
+
+  task-service:
+    build: ./task-service
+    container_name: taskflow-tasks
+    restart: unless-stopped
+    environment:
+      REDIS_URL_TASKS: ${REDIS_URL_TASKS:-redis://redis-tasks:6379/0}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL:-http://auth-service:8001}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis-tasks
+      - auth-service
+    networks:
+      - taskflow
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: taskflow-frontend
+    restart: unless-stopped
+    environment:
+      INTERNAL_AUTH_URL: ${INTERNAL_AUTH_URL:-http://auth-service:8001}
+      INTERNAL_TASKS_URL: ${INTERNAL_TASKS_URL:-http://task-service:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - task-service
+    networks:
+      - taskflow
+
+volumes:
+  redis_auth_data:
+  redis_tasks_data:
+
+networks:
+  taskflow:
+    driver: bridge

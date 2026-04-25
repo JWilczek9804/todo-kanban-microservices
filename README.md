@@ -3,7 +3,7 @@
 - System zarządzania zadaniami (To-Do) z bazą Redis: Prosta aplikacja w Pythonie (Flask/FastAPI) wykorzystująca Redisa jako magazyn danych w pamięci podręcznej
 - Mikroserwisowy system logowania (REST + Docker): Rozdzielenie logiki autoryzacji (OAuth2/JWT) od głównej aplikacji na dwa osobne kontenery Dockerowe.
 
-W skrócie: logujesz się mailem + hasłem, dostajesz tablicę Kanban (To Do / In Progress / Done), drag&drop'em przeciągasz karty myszką, dodajesz nowe i tyle.
+W skrócie: Logowanie mailem + hasłem, otrzymujesz tablicę Kanban (To Do / In Progress / Done), drag&drop'em przeciągasz karty myszką, dodajesz nowe lub usuwasz.
 
 ## Zawartość
 
@@ -88,7 +88,7 @@ task-service/         # FastAPI + redis + httpx (woła /verify)
     main.py
     security.py       # get_current_user przez auth-service
     schemas.py
-    services/         # logika biznesowa wyciągnięta z routera
+    services/         # logika biznesowa
       task_service.py
       dependencies.py
     routers/tasks.py  # tylko handlery HTTP
@@ -121,7 +121,7 @@ docker-compose.yml
 - `task:{user_id}:{task_id}` — JSON zadania
 - `tasks:{user_id}` — Set z `task_id`'kami (indeks per user)
 
-Podejrzeć z hosta:
+Podgląd z hosta:
 
 ```bash
 docker exec -it taskflow-redis-auth redis-cli

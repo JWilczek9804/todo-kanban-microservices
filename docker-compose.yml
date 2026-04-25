@@ -22,7 +22,7 @@ services:
     container_name: taskflow-auth
     restart: unless-stopped
     environment:
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-supersecretkey-change-me}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-uweaydaudwad32fesu8f48jdad932ddawai}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
       REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}

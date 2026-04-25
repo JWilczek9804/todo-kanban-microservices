@@ -3,10 +3,9 @@
 - System zarządzania zadaniami (To-Do) z bazą Redis: Prosta aplikacja w Pythonie (Flask/FastAPI) wykorzystująca Redisa jako magazyn danych w pamięci podręcznej
 - Mikroserwisowy system logowania (REST + Docker): Rozdzielenie logiki autoryzacji (OAuth2/JWT) od głównej aplikacji na dwa osobne kontenery Dockerowe.
 
-W skrócie: logujesz się mailem + hasłem, dostajesz tablicę Kanban (To Do / In Progress / Done),
-drag-dropem przeciągasz karty myszką, dodajesz nowe — i tyle.
+W skrócie: logujesz się mailem + hasłem, dostajesz tablicę Kanban (To Do / In Progress / Done), drag&drop'em przeciągasz karty myszką, dodajesz nowe i tyle.
 
-## Co tu mamy
+## Zawartość
 
 Trzy kontenery + dwa Redisy spięte przez docker-compose:
 
@@ -16,13 +15,9 @@ Trzy kontenery + dwa Redisy spięte przez docker-compose:
 - `redis-auth` — userzy i refresh tokeny
 - `redis-tasks` — zadania
 
-Frontend nigdy nie gada bezpośrednio z backendami — wszystko leci przez własne `/api/*`,
-żeby tokeny mogły siedzieć w **httpOnly cookies** (`tf_access`, `tf_refresh`) i nie dało się
-ich wyciągnąć z JS-a. Token w localStorage to proszenie się o XSS.
+## Jak uruchomić
 
-## Jak odpalić
-
-Wymagania: Docker Desktop. Reszta nie jest potrzebna.
+Wymagania: Docker Desktop. Uruchamianie jedną komendą
 
 ```bash
 docker compose up -d --build
@@ -30,7 +25,7 @@ docker compose up -d --build
 
 Potem otwórz <http://localhost:3000>, rejestracja konta i gotowe.
 
-Przy pierwszym buildzie stworzenie zajmuje ~5 minut, później cache działa swoje i jest szybko.
+Przy pierwszym buildzie tworzenie zajmuje ~5 minut.
 
 ### Zatrzymanie
 
@@ -119,12 +114,12 @@ docker-compose.yml
 **redis-auth:**
 
 - `user:{email}` — Hash: `id`, `email`, `first_name`, `last_name`, `hashed_pw`, `created_at`
-- `refresh:{jti}` — String z TTL (umożliwia revoke przy logout)
+- `refresh:{jti}` — String z TTL
 
 **redis-tasks:**
 
 - `task:{user_id}:{task_id}` — JSON zadania
-- `tasks:{user_id}` — Set z `task_id`-kami (indeks per user)
+- `tasks:{user_id}` — Set z `task_id`'kami (indeks per user)
 
 Podejrzeć z hosta:
 
